@@ -24,7 +24,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<?> handleAlreadyExistException(AlreadyExistException ex) {
         StatusResponseDTO response = new StatusResponseDTO();
-        response.setErrorCode(409);
+        response.setErrorCode(403);
         response.setErrorMessage(ex.getMessage());
         return ResponseEntity.status(409).body(response);
     }
@@ -32,7 +32,7 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFoundException(NotFoundException ex) {
         StatusResponseDTO response = new StatusResponseDTO();
-        response.setErrorCode(404);
+        response.setErrorCode(403);
         response.setErrorMessage(ex.getMessage());
         return ResponseEntity.status(404).body(response);
     }

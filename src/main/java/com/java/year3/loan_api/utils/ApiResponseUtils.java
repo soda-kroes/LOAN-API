@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ApiResponseUtils {
-    public static final String USER_EXISTS_CODE="01";
+    public static final String USER_EXISTS_CODE="403";
     public static final String USER_EXISTS_MESSAGE="Email Not Available.";
 
     public static final String SUCCESS_CODE="200";

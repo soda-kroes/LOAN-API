@@ -12,15 +12,17 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 
 @Service
 public class JwtService {
     private static final String SECRET_KEY = "VzGSY+AiF1qRyo4libzeQ9JUN/g05vodJP2Ip7vi3V7HEqlsmPJbpJVl8dUDrNLe";
 
 
-    //extract single claims from token
     //get username from token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -34,17 +36,22 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        extraClaims.put("roles", roles);
+        return generateToken(extraClaims, userDetails);
     }
+
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                //    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))//24h
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60))//60second
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // Use HS256 instead of ES256
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -58,7 +65,6 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    //extract single claims from token
     //get expire date form token
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);

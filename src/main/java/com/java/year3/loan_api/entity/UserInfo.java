@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -26,15 +27,15 @@ public class UserInfo implements UserDetails {
     private String lastname;
     private String email;
     private String password;
+    private LocalDateTime createdDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_info_roles",
             joinColumns = @JoinColumn(name = "user_info_id"), // Corrected column name
-            inverseJoinColumns = @JoinColumn(name = "user_role_id")) // Corrected column name
+            inverseJoinColumns = @JoinColumn(name = "user_role_id") // Corrected column name
+    )
     private Set<UserRole> roles = new HashSet<>();
-
-    // Implement UserDetails methods
 
     @Override
     public String getUsername() {
@@ -68,7 +69,6 @@ public class UserInfo implements UserDetails {
         for (UserRole role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
         }
-
         return authorities;
     }
 
