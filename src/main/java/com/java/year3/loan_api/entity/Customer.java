@@ -71,8 +71,10 @@ public class Customer {
     @Column(name = "currency", nullable = false)
     private String currency;
 
-    @Column(name = "branch_code", nullable = false)
-    private String branchCode;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_code")
+    private Branch branch;
 
     @ManyToOne
     @JoinColumn(name = "loan_officer_id")
