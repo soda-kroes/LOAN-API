@@ -10,10 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,11 +43,15 @@ public class JwtService {
 
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 7); // Add 7 days to the current date
+
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .setExpiration(calendar.getTime()) // Set the expiration to 1 week from the current date
+                //.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

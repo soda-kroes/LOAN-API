@@ -10,12 +10,9 @@ import javax.persistence.*;
 @Table(name = "branch")
 public class Branch {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "code", nullable = false, length = 100)
+    private String code;
 
-    @Column(name = "branch_name", nullable = false, length = 255)
-    private String branchName;
-
-    @Column(name = "branch_code", nullable = false, length = 100)
-    private String branchCode;
+    @Column(name = "name", nullable = false, length = 255)
+    private String name;
 }

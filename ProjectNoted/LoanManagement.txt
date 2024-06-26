@@ -1,92 +1,34 @@
  *********** LOAN MANGEMENT APPLICATION ******
- 
- +ENTITY:
-  1.Customer
-  **************
-  +Step1
-   -CustomerId
-   -FirstName
-   -LastName
-   -MaritalStatus
-   -Gender
-   -Tell
-   -Dob
-   -Email (optional)
-   -NID
-   -NID(IMage)
-   -Address(Province,District,Commune,Village)
-   -LoanOfficerId
-   
-   
-   +Step2:
-   -LoanAmount
-   -CurrenCy
-   -LoanTerm
-   -LoanType
-   -Branch
-   
-   2.LOAN Officer
-   -Id
-   -FirstName
-   -LastName
-   -Email
-   -Tell
-   -CreatedDate
-   -Password
-   -RoleID
-   
-   3.PaymentMethod
-   -PaymentId
-   -Name
-   -Code
-   
-   4. Payment:
-   -PaymentId
-   -CustomerId
-   -PaymentDate
-   -PaymentAmount
-   -PaymentMethod
-   
-   
-   
-   
-   ---------------
-   
-   ## Loan Management App: Detailed Functionality
 
 **User Roles:**
 
-* Borrower: Individuals managing their personal loans.
-* Loan Officer: Individuals managing loans for a financial institution.
-* System Administrator (Optional): Manages user accounts and system settings (for larger institutions).
+* BORROWER: Individuals managing their personal loans.
+* LOAN OFFICER: Individuals managing loans for a financial institution.
+* ADMIN : Manages user accounts
 
-**Core Functionalities:**
 
 1. **Loan Management:**
     * **Borrower:**
         * View a list of all their active loans.
-        * Access detailed information for each loan (amount, interest rate, term, repayment schedule, remaining balance).
+        * Access detailed information for each loan (amount, interest rate, term, repayment schedule).
         * Make loan payments (manual entry or integration with bank accounts).
-        * Download payment history or loan statements.
+        * export payment history or loan statements.
 
     * **Loan Officer:**
         * Create new loan applications.
         * Edit existing loan details (excluding core borrower information).
-        * Manage loan documents (upload, download, and share securely)..
+	* Delete loan from system
         * View borrower details and creditworthiness information (with proper authorization).
 
     * **System Administrator (Optional):**
         * Manage user accounts (create, edit, delete) and assign roles.
-        * Configure system settings (interest rate calculations, fee structures).
 
 
 
 3. **Reporting and Analytics:**
     * **Borrower Reports:**
-        * Track overall loan performance and remaining balances.
-        * View payment history and identify any missed payments.
-        * Export reports in various formats (PDF, CSV) for further analysis.
+        * View payment history.
+        * Export reports in various formats (CSV)
 
     * **Loan Officer Reports:**
-        * Monitor loan portfolio performance and identify potential delinquencies.
-        * Generate reports on loan types, interest rates, and borrower demographics.
+        * Generate reports on, loan types, interest rates

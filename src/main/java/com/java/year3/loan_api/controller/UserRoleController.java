@@ -9,11 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class UserRoleController {
     private final UserRoleService userRoleService;
 
@@ -48,6 +50,24 @@ public class UserRoleController {
             statusResponseDTO.setErrorCode(204);
             statusResponseDTO.setErrorMessage("Your Content Unexceptionable!");
             response.put("data", null);
+        }
+        response.put("status", statusResponseDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAllUser(){
+        Map<String,Object> response = new HashMap<>();
+        StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
+        List<UserRole> data = userRoleService.getAll();
+        if (data.isEmpty()){
+            statusResponseDTO.setErrorCode(204);
+            statusResponseDTO.setErrorMessage("User Role List is empty");
+            response.put("data", null);
+        }else{
+            statusResponseDTO.setErrorCode(200);
+            statusResponseDTO.setErrorMessage("User Role list retrieved successfully");
+            response.put("data", data);
         }
         response.put("status", statusResponseDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);

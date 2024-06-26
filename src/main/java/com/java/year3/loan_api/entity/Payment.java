@@ -5,6 +5,7 @@ import javax.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,11 +14,11 @@ import java.time.LocalDateTime;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "payment_date")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime paymentDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate paymentDate;
 
     @Column(name = "payment_amount", nullable = false)
     private BigDecimal paymentAmount;
@@ -28,4 +29,12 @@ public class Payment {
     @ManyToOne
     @JoinColumn(name = "payment_method_id")
     private PaymentMethod paymentMethod;
+
+    @Column(name = "created_payment_date")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdPaymentDate;
+
+    @ManyToOne
+    @JoinColumn(name = "loan_id")
+    private Loan loan;
 }

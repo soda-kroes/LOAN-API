@@ -7,5 +7,4 @@ import lombok.Data;
 public class StatusResponseDTO {
     private Integer errorCode;
     private String errorMessage;
-
 }

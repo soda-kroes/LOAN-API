@@ -8,6 +8,8 @@ import com.java.year3.loan_api.services.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
@@ -33,5 +35,10 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public UserRole getById(Long id) throws Exception {
         return userRoleRepository.findById(id).orElseThrow(()-> new NotFoundException("User Role with id " + id + " not found."));
+    }
+
+    @Override
+    public List<UserRole> getAll() {
+        return userRoleRepository.findAll();
     }
 }
