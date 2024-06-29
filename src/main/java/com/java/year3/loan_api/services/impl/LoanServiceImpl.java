@@ -3,6 +3,7 @@ package com.java.year3.loan_api.services.impl;
 import com.java.year3.loan_api.Specification.LoanFilter;
 import com.java.year3.loan_api.Specification.LoanSpecification;
 import com.java.year3.loan_api.dto.request.LoanRequestDTO;
+import com.java.year3.loan_api.dto.response.LoanResponseDTO;
 import com.java.year3.loan_api.entity.*;
 import com.java.year3.loan_api.exception.AlreadyExistException;
 import com.java.year3.loan_api.exception.NotFoundException;
@@ -13,10 +14,12 @@ import com.java.year3.loan_api.services.BranchService;
 import com.java.year3.loan_api.services.LoanService;
 import com.java.year3.loan_api.services.LoanTypeService;
 import com.java.year3.loan_api.utils.PageUtil;
+import com.java.year3.loan_api.utils.services.LoanResponseService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +28,8 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +39,18 @@ public class LoanServiceImpl implements LoanService {
     private final BranchService branchService;
     private final PaymentScheduleRepository paymentScheduleRepository;
 
+    private byte[] decodeBase64Image(String base64Image) {
+        Objects.requireNonNull(base64Image, "base64Image must not be null");
+
+        try {
+            return Base64.getDecoder().decode(base64Image);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid base64Image provided", e);
+        }
+    }
+
     @Override
-    public Loan createLoan(LoanRequestDTO loanRequestDTO) throws Exception {
+    public LoanResponseDTO createLoan(LoanRequestDTO loanRequestDTO) throws Exception {
         Loan loan = new Loan();
         loan.setFirstName(loanRequestDTO.getFirstName());
         loan.setLastName(loanRequestDTO.getLastName());
@@ -73,8 +84,15 @@ public class LoanServiceImpl implements LoanService {
         loan.setDateOfBirth(loanRequestDTO.getDateOfBirth());
         loan.setPhoneNumber(loanRequestDTO.getPhoneNumber());
         loan.setNationalityId(loanRequestDTO.getNationalityId());
-        loan.setNationalityImage(loanRequestDTO.getNationalityImage());
-        loan.setSelfieImage(loanRequestDTO.getSelfieImage());
+
+        //IMAGE
+        String nationalityImageBase64 = loanRequestDTO.getNationalityImage();
+        String selfieImageBase64 = loanRequestDTO.getSelfieImage();
+        byte[] nationalityImageData = decodeBase64Image(nationalityImageBase64);
+        byte[] selfieImageData = decodeBase64Image(selfieImageBase64);
+        loan.setNationalityImage(nationalityImageData);
+        loan.setSelfieImage(selfieImageData);
+
         loan.setCreatedDate(LocalDateTime.now()); // Set current date/time
         loan.setUpdatedDate(LocalDateTime.now());
 
@@ -129,6 +147,7 @@ public class LoanServiceImpl implements LoanService {
             throw new AlreadyExistException("Loan nationality id " + loan.getNationalityId() + " not available");
         }
         try{
+            //Save Loan
             Loan savedLoan = loanRepository.save(loan);
 
             // Generate payment schedule
@@ -136,7 +155,10 @@ public class LoanServiceImpl implements LoanService {
 
             // Insert payment objects into the table for the loan
             paymentScheduleRepository.saveAll(paymentSchedule);
-            return savedLoan;
+
+            //RESPONSE
+            LoanResponseDTO loanResponseDTO = LoanResponseService.createLoanResponseDTO(loan);
+            return loanResponseDTO;
         }catch (Exception ex){
             throw new Exception(ex);
         }
@@ -183,22 +205,35 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> getLoans() throws Exception {
-        return loanRepository.findAll();
+    public List<LoanResponseDTO> getLoans() throws Exception {
+        List<Loan> loans = loanRepository.findAll();
+        List<LoanResponseDTO> responses = new ArrayList<>();
+        for (Loan loan : loans) {
+            LoanResponseDTO loanResponseDTO = LoanResponseService.createLoanResponseDTO(loan);
+            responses.add(loanResponseDTO);
+        }
+        return responses;
     }
 
     @Override
-    public Loan getLoanByNationalityId(String nationalityId) throws Exception {
-        return loanRepository.findByNationalityId(nationalityId).orElseThrow(()-> new NotFoundException("No loan found with id " + nationalityId));
+    public LoanResponseDTO getLoanByNationalityId(String nationalityId) throws Exception {
+        Loan loan = loanRepository.findByNationalityId(nationalityId).orElseThrow(() -> new NotFoundException("No loan found with id " + nationalityId));
+
+        //RESPONSE
+        LoanResponseDTO loanResponseDTO = LoanResponseService.createLoanResponseDTO(loan);
+        return loanResponseDTO;
     }
 
     @Override
-    public Loan getLoanById(Long loanId) throws Exception {
-        return loanRepository.findById(loanId).orElseThrow(()-> new NotFoundException("No loan found with id " + loanId));
+    public LoanResponseDTO getLoanById(Long loanId) throws Exception {
+        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new NotFoundException("No loan found with id " + loanId));
+        //RESPONSE
+        LoanResponseDTO loanResponseDTO = LoanResponseService.createLoanResponseDTO(loan);
+        return loanResponseDTO;
     }
 
     @Override
-    public Loan updateLoan(Long loanId,LoanRequestDTO loanRequestDTO) throws Exception {
+    public LoanResponseDTO updateLoan(Long loanId,LoanRequestDTO loanRequestDTO) throws Exception {
         Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new NotFoundException("No loan found with id " + loanId));
         loan.setFirstName(loanRequestDTO.getFirstName());
         loan.setLastName(loanRequestDTO.getLastName());
@@ -212,8 +247,15 @@ public class LoanServiceImpl implements LoanService {
         loan.setDateOfBirth(loanRequestDTO.getDateOfBirth());
         loan.setPhoneNumber(loanRequestDTO.getPhoneNumber());
         loan.setNationalityId(loanRequestDTO.getNationalityId());
-        loan.setNationalityImage(loanRequestDTO.getNationalityImage());
-        loan.setSelfieImage(loanRequestDTO.getSelfieImage());
+
+        //IMAGE
+        String nationalityImageBase64 = loanRequestDTO.getNationalityImage();
+        String selfieImageBase64 = loanRequestDTO.getSelfieImage();
+        // Decode Base64-encoded strings to obtain binary image data
+        byte[] nationalityImageData = Base64.getDecoder().decode(nationalityImageBase64);
+        byte[] selfieImageData = Base64.getDecoder().decode(selfieImageBase64);
+        loan.setNationalityImage(nationalityImageData);
+        loan.setSelfieImage(selfieImageData);
 
         loan.setUpdatedDate(LocalDateTime.now());
         LoanType loanTypeByCode = loanTypeService.getLoanTypeById(loanRequestDTO.getLoanTypeId());
@@ -222,7 +264,10 @@ public class LoanServiceImpl implements LoanService {
         Branch branchByBranchCode = branchService.getBranchByBranchCode(loanRequestDTO.getBranchCode());
         loan.setBranch(branchByBranchCode);
         try {
-            return loanRepository.save(loan);
+            Loan saveLoan = loanRepository.save(loan);
+            //RESPONSE
+            LoanResponseDTO loanResponseDTO = LoanResponseService.createLoanResponseDTO(saveLoan);
+            return loanResponseDTO;
         }catch (Exception ex){
             throw new Exception(ex);
         }
@@ -240,7 +285,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public Page<Loan> getAllLoans(Map<String, String> params) throws Exception {
+    public Page<LoanResponseDTO> getAllLoans(Map<String, String> params) throws Exception {
         LoanFilter loanFilter = new LoanFilter();
         if (params.containsKey("id")){
             String id = params.get("id");
@@ -250,14 +295,7 @@ public class LoanServiceImpl implements LoanService {
             String nationalityId = params.get("nationalityId");
             loanFilter.setNationalityId(Integer.valueOf(nationalityId));
         }
-        if (params.containsKey("requestNo")){
-            String requestNo = params.get("requestNo");
-            loanFilter.setRequestNo(Long.valueOf(requestNo));
-        }
-        if (params.containsKey("loanType")){
-            String loanType = params.get("loanType");
-            loanFilter.setLoanType(loanType);
-        }
+
         //for pagenation
         int pageLimit = PageUtil.DEFAULT_PAGE_LIMIT;
         if (params.containsKey(PageUtil.PAGE_LIMIT)) {
@@ -271,11 +309,16 @@ public class LoanServiceImpl implements LoanService {
         LoanSpecification loanSpecification = new LoanSpecification(loanFilter);
         Pageable pageable = PageUtil.getPageable(pageNumber, pageLimit);
         Page<Loan> page = loanRepository.findAll(loanSpecification, pageable);
-        return page;
+
+        List<LoanResponseDTO> loanResponseDTOs = page.getContent().stream()
+                .map(LoanResponseService::convertToLoanResponseDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(loanResponseDTOs, pageable, page.getTotalElements());
     }
 
     @Override
-    public void writeCustomerToCsv(List<Loan> loanList, Writer writer) throws IOException {
+    public void writeCustomerToCsv(List<LoanResponseDTO> loanList, Writer writer) throws IOException {
         try {
 
             CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT.withFirstRecordAsHeader());
@@ -290,7 +333,7 @@ public class LoanServiceImpl implements LoanService {
                     "BRANCH"
 
             );
-            for (Loan loan : loanList) {
+            for (LoanResponseDTO loan : loanList) {
                 printer.printRecord(
                         loan.getFirstName(),
                         loan.getGender(),

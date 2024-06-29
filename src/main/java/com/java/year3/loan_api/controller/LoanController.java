@@ -1,6 +1,7 @@
 package com.java.year3.loan_api.controller;
 
 import com.java.year3.loan_api.dto.request.LoanRequestDTO;
+import com.java.year3.loan_api.dto.response.LoanResponseDTO;
 import com.java.year3.loan_api.dto.response.StatusResponseDTO;
 import com.java.year3.loan_api.entity.Loan;
 import com.java.year3.loan_api.services.LoanService;
@@ -27,7 +28,7 @@ public class LoanController {
     public ResponseEntity<?> create(@Valid @RequestBody LoanRequestDTO loanRequestDTO) throws Exception {
         Map<String, Object> response = new HashMap<>();
         StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-        Loan data = loanService.createLoan(loanRequestDTO);
+        LoanResponseDTO data = loanService.createLoan(loanRequestDTO);
         if (data != null) {
             statusResponseDTO.setErrorCode(200);
             statusResponseDTO.setErrorMessage("Loan created successfully");
@@ -45,7 +46,7 @@ public class LoanController {
     public ResponseEntity<?> getAllLoans() throws Exception {
         Map<String, Object> response = new HashMap<>();
         StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-        List<Loan> data = loanService.getLoans();
+        List<LoanResponseDTO> data = loanService.getLoans();
         if (data.isEmpty()){
             statusResponseDTO.setErrorCode(204);
             statusResponseDTO.setErrorMessage("Loan List is empty");
@@ -63,7 +64,7 @@ public class LoanController {
     public ResponseEntity<?> getAll(@RequestParam Map<String, String> params) throws Exception {
         Map<String, Object> response = new HashMap<>();
         StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-        Page<Loan> data = loanService.getAllLoans(params);
+        Page<LoanResponseDTO> data = loanService.getAllLoans(params);
         if (data.isEmpty()){
             statusResponseDTO.setErrorCode(204);
             statusResponseDTO.setErrorMessage("Loan List is empty");
@@ -81,7 +82,7 @@ public class LoanController {
     public ResponseEntity<?> getLoanByNationalityId(@PathVariable String id) throws Exception {
         Map<String, Object> response = new HashMap<>();
         StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-        Loan data = loanService.getLoanByNationalityId(id);
+        LoanResponseDTO data = loanService.getLoanByNationalityId(id);
         if (data != null) {
             statusResponseDTO.setErrorCode(200);
             statusResponseDTO.setErrorMessage("Loan list retrieved successfully");
@@ -100,7 +101,7 @@ public class LoanController {
     public ResponseEntity<?> getLoanByRequestNo(@PathVariable(name = "id") Long loanId) throws Exception {
         Map<String, Object> response = new HashMap<>();
         StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-        Loan data = loanService.getLoanById(loanId);
+        LoanResponseDTO data = loanService.getLoanById(loanId);
         if (data != null) {
             statusResponseDTO.setErrorCode(200);
             statusResponseDTO.setErrorMessage("Loan list retrieved successfully");
@@ -118,7 +119,7 @@ public class LoanController {
     public ResponseEntity<?> updateLoan(@PathVariable(name = "id") Long requestNo, @RequestBody LoanRequestDTO loanRequestDTO)throws Exception {
         Map<String, Object> response = new HashMap<>();
         StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-        Loan data = loanService.updateLoan(requestNo,loanRequestDTO);
+        LoanResponseDTO data = loanService.updateLoan(requestNo, loanRequestDTO);
         if (data != null) {
             statusResponseDTO.setErrorCode(200);
             statusResponseDTO.setErrorMessage("Loan updated successfully");
@@ -150,7 +151,8 @@ public class LoanController {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/csv; charset=UTF-8");
         response.addHeader("Content-Disposition", "attachment; filename=loan.csv");
-        List<Loan> loans = loanService.getLoans();
+        List<LoanResponseDTO> loans = loanService.getLoans();
+
         loanService.writeCustomerToCsv(loans, response.getWriter());
     }
 }

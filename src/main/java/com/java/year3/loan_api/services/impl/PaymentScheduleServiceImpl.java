@@ -1,5 +1,6 @@
 package com.java.year3.loan_api.services.impl;
 
+import com.java.year3.loan_api.dto.response.LoanResponseDTO;
 import com.java.year3.loan_api.dto.response.PaymentScheduleResponseDTO;
 import com.java.year3.loan_api.entity.Loan;
 import com.java.year3.loan_api.entity.PaymentSchedule;
@@ -20,7 +21,7 @@ public class PaymentScheduleServiceImpl implements PaymentScheduleService {
     private final LoanService loanService;
 
     public List<PaymentScheduleResponseDTO> getPaymentByLoanIdAndPaymentDate(Long loanId, LocalDate paymentDate) throws Exception {
-        Loan loanById = loanService.getLoanById(loanId);
+        LoanResponseDTO loanById = loanService.getLoanById(loanId);
         List<PaymentSchedule> data = paymentScheduleRepository.findByLoanIdAndPaymentDate(loanById.getId(), paymentDate);
         List<PaymentScheduleResponseDTO> responseDTOs = new ArrayList<>();
 

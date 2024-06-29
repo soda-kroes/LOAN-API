@@ -43,11 +43,13 @@ public class Loan {
     @Column(name = "nationality_id", nullable = false, length = 10)
     private String nationalityId;
 
-    @Column(name = "nationality_image", nullable = false, length = 250)
-    private String nationalityImage;
+    @Column(name = "nationality_image", nullable = false)
+    @Lob
+    private byte[] nationalityImage;
 
-    @Column(name = "selfie_image", nullable = false, length = 250)
-    private String selfieImage;
+    @Column(name = "selfie_image", nullable = false)
+    @Lob
+    private byte[] selfieImage;
 
     @Column(name = "address", nullable = false,length = 250)
     private String address;
@@ -89,7 +91,5 @@ public class Loan {
 
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<PaymentSchedule> paymentSchedule;
-
-
 
 }

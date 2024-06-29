@@ -1,6 +1,7 @@
 package com.java.year3.loan_api.services.impl;
 
 import com.java.year3.loan_api.dto.request.PaymentRequestDTO;
+import com.java.year3.loan_api.dto.response.LoanResponseDTO;
 import com.java.year3.loan_api.dto.response.PaymentResponseDTO;
 import com.java.year3.loan_api.dto.response.PaymentScheduleResponseDTO;
 import com.java.year3.loan_api.entity.Loan;
@@ -36,7 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponseDTO createPayment(PaymentRequestDTO paymentRequest) throws Exception {
-        Loan loanById = loanService.getLoanById(paymentRequest.getLoanId());
+        LoanResponseDTO loanById = loanService.getLoanById(paymentRequest.getLoanId());
         Payment payment = new Payment();
         payment.setCreatedPaymentDate(LocalDateTime.now());
         payment.setPaymentDate(paymentRequest.getPaymentDate());
@@ -44,7 +45,11 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentDescription(paymentRequest.getPaymentDescription());
         PaymentMethod paymentMethodById = paymentMethodService.getPaymentMethodById(paymentRequest.getPaymentMethodId());
         payment.setPaymentMethod(paymentMethodById);
-        payment.setLoan(loanById);
+
+        //convert loanTypeRespose to loan
+        Loan loan = new Loan();
+        loan.setId(loanById.getId());
+        payment.setLoan(loan);
 
         System.out.println("==========================================");
         System.out.println(paymentRequest.getPaymentDate());
