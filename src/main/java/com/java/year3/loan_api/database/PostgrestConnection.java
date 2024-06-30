@@ -10,7 +10,6 @@ public class PostgrestConnection {
     private String PG_CLASS = "org.postgresql.Driver";
 
 
-
     // ---------PROD-------------
     private String PG_DB_URL = "jdbc:postgresql://localhost:5432/loan";
     private String PG_USER = "postgres";
@@ -18,7 +17,6 @@ public class PostgrestConnection {
 
 
     Connection sqsv_conn = null;
-
 
     public ResultSet selectAll(String query){
         ResultSet result = null;

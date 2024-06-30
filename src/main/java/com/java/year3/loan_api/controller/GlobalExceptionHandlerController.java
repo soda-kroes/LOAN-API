@@ -53,7 +53,6 @@ public class GlobalExceptionHandlerController {
         return ResponseEntity.status(400).body(response);
     }
 
-
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
             Map<String, String> errors = new HashMap<>();

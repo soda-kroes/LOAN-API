@@ -16,6 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/branch")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class BranchController {
     private final BranchService branchService;
 
