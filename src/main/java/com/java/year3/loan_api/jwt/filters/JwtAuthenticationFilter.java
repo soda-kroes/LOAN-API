@@ -55,15 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ex) {
-            // Token has expired
-            response.setStatus(SC_UNAUTHORIZED);
-            //   System.out.println("JWT Token has expired");
-            Map<String,String> err = new HashMap<>();
-            err.put("error_message",ex.getMessage());
-            response.setContentType(APPLICATION_JSON_VALUE);
-            new ObjectMapper().writeValue(response.getOutputStream(),err);
 
-            return;
         }
 
         filterChain.doFilter(request, response);

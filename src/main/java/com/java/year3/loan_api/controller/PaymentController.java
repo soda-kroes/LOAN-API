@@ -3,8 +3,6 @@ package com.java.year3.loan_api.controller;
 import com.java.year3.loan_api.dto.request.PaymentRequestDTO;
 import com.java.year3.loan_api.dto.response.PaymentResponseDTO;
 import com.java.year3.loan_api.dto.response.StatusResponseDTO;
-import com.java.year3.loan_api.entity.Payment;
-import com.java.year3.loan_api.entity.UserRole;
 import com.java.year3.loan_api.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

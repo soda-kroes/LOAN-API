@@ -1,6 +1,7 @@
 package com.java.year3.loan_api.jwt.service;
 
 
+import com.java.year3.loan_api.entity.UserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,7 +33,8 @@ public class JwtService {
 
     }
 
-    public String generateToken(UserDetails userDetails) {
+
+    public String generateToken(UserInfo userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -41,17 +43,15 @@ public class JwtService {
         return generateToken(extraClaims, userDetails);
     }
 
-
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 7); // Add 7 days to the current date
+        calendar.add(Calendar.MONTH, 1); // Add 1 month to the current date
 
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(calendar.getTime()) // Set the expiration to 1 week from the current date
-                //.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .setExpiration(calendar.getTime()) // Set the expiration to 1 month from the current date
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -80,6 +80,4 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-
 }

@@ -1,7 +1,8 @@
 package com.java.year3.loan_api.config;
 
 
-import com.java.year3.loan_api.jwt.repository.UserInfoRepository;
+
+import com.java.year3.loan_api.repository.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

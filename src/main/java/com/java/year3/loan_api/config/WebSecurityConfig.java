@@ -11,11 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableWebSecurity
@@ -25,27 +20,21 @@ public class WebSecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf()
-                .disable()
+        http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth/**") // Specify your request matchers here
-                .permitAll()
-                .antMatchers("/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**") // Allow access to Swagger endpoints
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .antMatchers("/api/v1/auth/register","/api/v1/user/get-all","/api/v1/user/get-by-id/**","/api/v1/user/delete/**","/api/v1/user/update/**","/api/v1/user/enable/**","/api/v1/user/disable/**","/api/v1/user/reset-pass/**").hasAuthority("ADMIN")
+                .antMatchers("/api/v1/auth/login").permitAll()
+                .antMatchers("/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll()
+
+                .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .exceptionHandling()
+                .and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .and()
-                .authenticationProvider(authenticationProvider)
+                .and().authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

@@ -1,7 +1,6 @@
 package com.java.year3.loan_api.services;
 
 import com.java.year3.loan_api.entity.UserRole;
-import com.java.year3.loan_api.exception.AlreadyExistException;
 
 import java.util.List;
 

@@ -17,7 +17,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public UserRole create(UserRole userRoleRequest) throws Exception {
-        UserRole userRole= new UserRole();
+        UserRole userRole = new UserRole();
         userRole.setName(userRoleRequest.getName());
 
         //check exists name

@@ -22,20 +22,24 @@ public class UserInfo implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String firstname;
     private String lastname;
+    private String gender;
     private String email;
     private String password;
+    private int status;
+    private int changePassword;
     private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_info_roles",
-            joinColumns = @JoinColumn(name = "user_info_id"), // Corrected column name
-            inverseJoinColumns = @JoinColumn(name = "user_role_id") // Corrected column name
+            joinColumns = @JoinColumn(name = "user_info_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_role_id")
     )
-    private Set<UserRole> roles = new HashSet<>();
+    private Set<UserRole> userRoles = new HashSet<>();
 
     @Override
     public String getUsername() {
@@ -66,8 +70,8 @@ public class UserInfo implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        for (UserRole role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
+        for (UserRole userRole : userRoles) {
+            authorities.add(new SimpleGrantedAuthority(userRole.getName().toUpperCase()));
         }
         return authorities;
     }
