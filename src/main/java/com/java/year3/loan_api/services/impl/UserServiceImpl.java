@@ -95,7 +95,6 @@ public class UserServiceImpl implements UserService {
             responseDTO.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             responseDTO.setErrorMessage(ex.getMessage());
         }
-
         return responseDTO;
     }
 
