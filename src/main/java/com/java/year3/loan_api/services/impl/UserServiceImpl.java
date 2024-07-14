@@ -157,6 +157,4 @@ public class UserServiceImpl implements UserService {
         statusResponseDTO.setErrorMessage("User with id " + id + " has been reset.");
         return statusResponseDTO;
     }
-
-
 }

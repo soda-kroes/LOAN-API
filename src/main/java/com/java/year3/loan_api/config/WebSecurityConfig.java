@@ -26,6 +26,7 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/register","/api/v1/user/get-all","/api/v1/user/get-by-id/**","/api/v1/user/delete/**","/api/v1/user/update/**","/api/v1/user/enable/**","/api/v1/user/disable/**","/api/v1/user/reset-pass/**").hasAuthority("ADMIN")
                 .antMatchers("/api/v1/auth/login").permitAll()
+//                .antMatchers("/api/v1/auth/register").permitAll()
                 .antMatchers("/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll()
 
                 .anyRequest().authenticated()
